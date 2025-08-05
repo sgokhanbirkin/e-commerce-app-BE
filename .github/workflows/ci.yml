@@ -57,6 +57,10 @@ jobs:
           DOCKER_BUILDKIT: 1
 
       - name: Test Docker Compose
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
         env:
           DATABASE_URL: "file:./test.db"
+          JWT_SECRET: "test-secret-key"
+          CORS_ORIGIN: "*"
+          LOG_LEVEL: "error"
+          NODE_ENV: "production"
