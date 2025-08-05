@@ -150,6 +150,44 @@ GET /api/products
 GET /api/products/{id}
 ```
 
+#### Get Product Variants
+```http
+GET /api/products/{id}/variants
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "sku": "IPHONE15PRO-128",
+      "attribute": "capacity",
+      "value": "128GB",
+      "stock": 20,
+      "priceDiff": 0
+    },
+    {
+      "id": 2,
+      "sku": "IPHONE15PRO-256",
+      "attribute": "capacity",
+      "value": "256GB",
+      "stock": 20,
+      "priceDiff": 100
+    },
+    {
+      "id": 3,
+      "sku": "IPHONE15PRO-512",
+      "attribute": "capacity",
+      "value": "512GB",
+      "stock": 10,
+      "priceDiff": 300
+    }
+  ],
+  "message": "Product variants retrieved successfully"
+}
+```
+
 #### Get Products by Category
 ```http
 GET /api/products?categoryId={categoryId}
