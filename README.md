@@ -74,7 +74,7 @@ Content-Type: application/json
 
 #### Get User Profile
 ```http
-GET /api/auth/users/me
+GET /api/users/me
 Authorization: Bearer <token>
 ```
 
@@ -85,19 +85,7 @@ Authorization: Bearer <token>
   "email": "user@example.com",
   "name": "John Doe",
   "phone": "+1234567890",
-  "createdAt": "2025-08-05T14:13:09.738Z",
-  "addresses": [
-    {
-      "id": 1,
-      "label": "Home",
-      "line1": "123 Main St",
-      "line2": "Apt 4B",
-      "city": "New York",
-      "postal": "10001",
-      "country": "USA",
-      "phone": "+1234567890"
-    }
-  ]
+  "createdAt": "2025-08-05T14:13:09.738Z"
 }
 ```
 
