@@ -60,7 +60,8 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-if (require.main === module) {
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
     console.log(`BE running on http://localhost:${PORT}`);
   });

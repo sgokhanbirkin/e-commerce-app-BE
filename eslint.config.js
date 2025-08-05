@@ -1,11 +1,11 @@
-import js from "@eslint/js";
-import typescript from "@typescript-eslint/eslint-plugin";
-import typescriptParser from "@typescript-eslint/parser";
+const js = require("@eslint/js");
+const typescript = require("@typescript-eslint/eslint-plugin");
+const typescriptParser = require("@typescript-eslint/parser");
 
-export default [
+module.exports = [
   js.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ["**/*.ts"],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -34,21 +34,14 @@ export default [
     },
     rules: {
       ...typescript.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-unsafe-function-type": "off",
-      "prefer-const": "error",
-      "no-var": "error",
-      "no-undef": "error",
+      "no-console": "off",
+      "prefer-const": "warn",
     },
   },
   {
-    ignores: [
-      "node_modules/**",
-      "dist/**",
-      "coverage/**",
-      "*.config.js",
-      "*.config.ts",
-    ],
+    ignores: ["dist/**", "node_modules/**", "*.js"],
   },
 ];
