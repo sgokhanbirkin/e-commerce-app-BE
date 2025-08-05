@@ -280,6 +280,18 @@ GET /api/products/{productId}/reviews
       "id": 1,
       "name": "John Doe"
     }
+  },
+  {
+    "id": 2,
+    "productId": 1,
+    "userId": 2,
+    "rating": 4,
+    "comment": "Great quality, fast delivery",
+    "createdAt": "2025-08-05T14:20:30.000Z",
+    "user": {
+      "id": 2,
+      "name": "Jane Smith"
+    }
   }
 ]
 ```
@@ -293,6 +305,22 @@ Content-Type: application/json
 {
   "rating": 5,
   "comment": "Excellent product!"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 3,
+  "productId": 1,
+  "userId": 1,
+  "rating": 5,
+  "comment": "Excellent product!",
+  "createdAt": "2025-08-05T14:25:45.000Z",
+  "user": {
+    "id": 1,
+    "name": "John Doe"
+  }
 }
 ```
 
