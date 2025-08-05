@@ -52,6 +52,10 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t ecommerce-backend .
+        env:
+          DOCKER_BUILDKIT: 1
 
       - name: Test Docker Compose
         run: docker-compose up -d --build
+        env:
+          DATABASE_URL: "file:./test.db"

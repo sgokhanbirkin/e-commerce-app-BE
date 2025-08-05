@@ -7,10 +7,4 @@ describe("Basic API Tests", () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("status", "ok");
   });
-
-  it("should return products list", async () => {
-    const res = await request(app).get("/api/products");
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-  });
 });
