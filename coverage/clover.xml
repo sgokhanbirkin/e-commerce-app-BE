@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1754402108797" clover="3.2.0">
-  <project timestamp="1754402108798" name="All files">
+<coverage generated="1754402727834" clover="3.2.0">
+  <project timestamp="1754402727834" name="All files">
     <metrics statements="342" coveredstatements="192" conditionals="42" coveredconditionals="4" methods="57" coveredmethods="3" elements="441" coveredelements="199" complexity="0" loc="342" ncloc="342" packages="6" files="29" classes="29"/>
     <package name="src">
       <metrics statements="47" coveredstatements="41" conditionals="5" coveredconditionals="2" methods="3" coveredmethods="0"/>
@@ -190,8 +190,8 @@
       <file name="asyncHandler.ts" path="/Users/gokhanbirkin/Desktop/birkinapps/kayra-export-e-commerce-BE/src/middleware/asyncHandler.ts">
         <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="4" count="21" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="21" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
       </file>
       <file name="authMiddleware.ts" path="/Users/gokhanbirkin/Desktop/birkinapps/kayra-export-e-commerce-BE/src/middleware/authMiddleware.ts">
         <metrics statements="11" coveredstatements="3" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
