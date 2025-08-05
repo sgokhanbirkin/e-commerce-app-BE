@@ -98,6 +98,127 @@ Authorization: Bearer <token>
 }
 ```
 
+#### Get User Addresses
+```http
+GET /api/users/me/addresses
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "userId": 1,
+      "label": "Home",
+      "line1": "123 Main St",
+      "line2": "Apt 4B",
+      "city": "New York",
+      "postal": "10001",
+      "country": "USA",
+      "phone": "+1234567890"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "label": "Work",
+      "line1": "456 Business Ave",
+      "line2": "Suite 200",
+      "city": "New York",
+      "postal": "10002",
+      "country": "USA",
+      "phone": "+1234567891"
+    }
+  ],
+  "message": "User addresses retrieved successfully"
+}
+```
+
+#### Add User Address
+```http
+POST /api/users/me/addresses
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "label": "Home",
+  "line1": "123 Main St",
+  "line2": "Apt 4B",
+  "city": "New York",
+  "postal": "10001",
+  "country": "USA",
+  "phone": "+1234567890"
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 3,
+    "userId": 1,
+    "label": "Home",
+    "line1": "123 Main St",
+    "line2": "Apt 4B",
+    "city": "New York",
+    "postal": "10001",
+    "country": "USA",
+    "phone": "+1234567890"
+  },
+  "message": "Address added successfully"
+}
+```
+
+#### Update User Address
+```http
+PUT /api/users/me/addresses/{addressId}
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "label": "Home Updated",
+  "line1": "123 Main St",
+  "line2": "Apt 5C",
+  "city": "New York",
+  "postal": "10001",
+  "country": "USA",
+  "phone": "+1234567890"
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "label": "Home Updated",
+    "line1": "123 Main St",
+    "line2": "Apt 5C",
+    "city": "New York",
+    "postal": "10001",
+    "country": "USA",
+    "phone": "+1234567890"
+  },
+  "message": "Address updated successfully"
+}
+```
+
+#### Delete User Address
+```http
+DELETE /api/users/me/addresses/{addressId}
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": null,
+  "message": "Address deleted successfully"
+}
+```
+
 ### 📦 Products
 
 #### Get All Products
