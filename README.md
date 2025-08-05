@@ -8,6 +8,12 @@ Modern e-commerce backend API'si. Node.js, TypeScript, Express.js, Prisma ve SQL
 # Install dependencies
 pnpm install
 
+# Environment setup
+cp .env.example .env
+```
+> **Note:** `.env.example` contains all required environment variables. Update the values in `.env` according to your setup.
+
+```bash
 # Setup database
 npx prisma generate
 npx prisma migrate deploy
