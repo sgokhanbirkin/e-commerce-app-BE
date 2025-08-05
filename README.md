@@ -155,11 +155,11 @@ GET /api/products/{id}
 GET /api/products?categoryId={categoryId}
 ```
 
-### 🛍️ Basket (Protected)
+### 🛒 Shopping Cart (Protected)
 
-#### Get User Basket
+#### Get Cart Items
 ```http
-GET /api/basket
+GET /api/cart
 Authorization: Bearer <token>
 ```
 
@@ -187,32 +187,6 @@ Authorization: Bearer <token>
     }
   }
 ]
-```
-
-#### Add Item to Basket
-```http
-POST /api/basket
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "variantId": 1,
-  "quantity": 2
-}
-```
-
-#### Remove Item from Basket
-```http
-DELETE /api/basket/{itemId}
-Authorization: Bearer <token>
-```
-
-### 🛒 Cart (Protected)
-
-#### Get Cart Items
-```http
-GET /api/cart
-Authorization: Bearer <token>
 ```
 
 #### Add Item to Cart
@@ -376,7 +350,7 @@ localStorage.setItem('token', token);
 ```javascript
 const token = localStorage.getItem('token');
 
-const response = await fetch('/api/basket', {
+const response = await fetch('/api/cart', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -456,14 +430,14 @@ const ProductList = () => {
 };
 ```
 
-### Basket Management
+### Shopping Cart Management
 ```javascript
-const BasketManager = () => {
+const CartManager = () => {
   const { token } = useAuth();
-  const [basket, setBasket] = useState([]);
+  const [cart, setCart] = useState([]);
 
-  const addToBasket = async (variantId, quantity) => {
-    const response = await fetch('/api/basket', {
+  const addToCart = async (variantId, quantity) => {
+    const response = await fetch('/api/cart', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -472,21 +446,21 @@ const BasketManager = () => {
       body: JSON.stringify({ variantId, quantity })
     });
     
-    // Refresh basket
-    fetchBasket();
+    // Refresh cart
+    fetchCart();
   };
 
-  const fetchBasket = async () => {
-    const response = await fetch('/api/basket', {
+  const fetchCart = async () => {
+    const response = await fetch('/api/cart', {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await response.json();
-    setBasket(data);
+    setCart(data);
   };
 
   return (
     <div>
-      {basket.map(item => (
+      {cart.map(item => (
         <div key={item.id}>
           <img src={item.variant.product.imageUrl} />
           <h4>{item.variant.product.title}</h4>
@@ -540,9 +514,9 @@ CREATE TABLE product_variants (
 );
 ```
 
-### Basket Items
+### Cart Items
 ```sql
-CREATE TABLE basket_items (
+CREATE TABLE cart_items (
   id INTEGER PRIMARY KEY,
   userId INTEGER,
   variantId INTEGER,
