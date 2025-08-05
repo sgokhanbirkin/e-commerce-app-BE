@@ -9,6 +9,20 @@ export const swaggerOptions = {
     servers: [
       { url: "http://localhost:8080", description: "Local dev server" },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ["./src/routes/*.ts", "./src/controllers/*.ts"], // JSDoc yorumlarından spec üretilecek dosyalar
 };
