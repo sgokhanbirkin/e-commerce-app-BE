@@ -20,9 +20,10 @@ describe("Auth Endpoints", () => {
     });
 
     it("should return 400 for invalid data", async () => {
-      const res = await request(app)
-        .post("/api/auth/register")
-        .send({ email: "invalid-email" });
+      const res = await request(app).post("/api/auth/register").send({
+        email: "invalid-email",
+        password: "123", // Too short password
+      });
 
       expect(res.status).toBe(400);
     });

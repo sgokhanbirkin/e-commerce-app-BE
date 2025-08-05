@@ -15,7 +15,7 @@ import { swaggerOptions } from "./swagger";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { apiLimiter } from "./middleware/rateLimiter";
-import { db } from "./db";
+import { db } from "./db"; // Added for graceful shutdown
 
 dotenv.config();
 
@@ -40,20 +40,24 @@ const specs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT || 8080;
-const server = app.listen(PORT, () => {
-  console.log(`BE running on http://localhost:${PORT}`);
-});
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  const server = app.listen(PORT, () => {
+    console.log(`BE running on http://localhost:${PORT}`);
+  });
+
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    logger.logger.info("SIGTERM received, shutting down");
+    server.close(() => db.$disconnect());
+  });
+  process.on("SIGINT", () => {
+    logger.logger.info("SIGINT received, shutting down");
+    server.close(() => db.$disconnect());
+  });
+}
 
 app.use(errorHandler);
-
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  logger.logger.info("SIGTERM received, shutting down");
-  server.close(() => db.$disconnect());
-});
-process.on("SIGINT", () => {
-  logger.logger.info("SIGINT received, shutting down");
-  server.close(() => db.$disconnect());
-});
 
 export { app };
