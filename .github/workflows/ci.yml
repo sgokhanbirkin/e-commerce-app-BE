@@ -51,7 +51,8 @@ jobs:
         run: pnpm build
 
       - name: Build Docker image
-        run: docker build -t ecommerce-backend .
+        run: |
+          docker build --no-cache -t ecommerce-backend .
         env:
           DOCKER_BUILDKIT: 1
 

@@ -1,8 +1,11 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY . .
+COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm@10.14.0
-RUN pnpm install --force && pnpm build
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN pnpm build
 
 FROM node:20-alpine
 WORKDIR /app
