@@ -1,8 +1,8 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile && pnpm build
+RUN npm install -g pnpm@10.14.0
+RUN pnpm install --force && pnpm build
 
 FROM node:20-alpine
 WORKDIR /app
