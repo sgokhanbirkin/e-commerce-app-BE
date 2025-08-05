@@ -28,6 +28,12 @@ jobs:
           npx prisma generate
           npx prisma migrate deploy
           pnpm seed
+        env:
+          DATABASE_URL: "file:./test.db"
+          JWT_SECRET: "test-secret-key"
+          CORS_ORIGIN: "*"
+          LOG_LEVEL: "error"
+          NODE_ENV: "test"
 
       - name: Run linting
         run: pnpm lint

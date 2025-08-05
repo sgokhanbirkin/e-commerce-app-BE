@@ -262,4 +262,4 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 
 **Geliştirici**: Süleyman Gökhan BİRKİN
 **Versiyon**: 1.0.0  
-**Son Güncelleme**: 2025 
+**Son Güncelleme**: 2025
