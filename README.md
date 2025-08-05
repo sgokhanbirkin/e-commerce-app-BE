@@ -41,11 +41,14 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "id": 1,
-  "email": "user@example.com",
-  "name": "John Doe",
-  "phone": "+1234567890",
-  "createdAt": "2025-08-05T14:13:09.738Z"
+  "data": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe",
+    "phone": "+1234567890",
+    "createdAt": "2025-08-05T14:13:09.738Z"
+  },
+  "message": "User registered successfully"
 }
 ```
 
@@ -63,12 +66,15 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "name": "John Doe"
+    }
+  },
+  "message": "Login successful"
 }
 ```
 
@@ -81,11 +87,14 @@ Authorization: Bearer <token>
 **Response:**
 ```json
 {
-  "id": 1,
-  "email": "user@example.com",
-  "name": "John Doe",
-  "phone": "+1234567890",
-  "createdAt": "2025-08-05T14:13:09.738Z"
+  "data": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe",
+    "phone": "+1234567890",
+    "createdAt": "2025-08-05T14:13:09.738Z"
+  },
+  "message": "User profile retrieved successfully"
 }
 ```
 
@@ -98,39 +107,42 @@ GET /api/products
 
 **Response:**
 ```json
-[
-  {
-    "id": 1,
-    "title": "iPhone 15 Pro",
-    "description": "Latest iPhone with advanced camera system",
-    "price": 999.99,
-    "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
-    "categoryId": 1,
-    "category": {
+{
+  "data": [
+    {
       "id": 1,
-      "name": "Electronics"
-    },
-    "variants": [
-      {
+      "title": "iPhone 15 Pro",
+      "description": "Latest iPhone with advanced camera system",
+      "price": 999.99,
+      "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+      "categoryId": 1,
+      "category": {
         "id": 1,
-        "sku": "IPHONE15PRO-128",
-        "attribute": "capacity",
-        "value": "128GB",
-        "stock": 20,
-        "priceDiff": 0
+        "name": "Electronics"
       },
-      {
-        "id": 2,
-        "sku": "IPHONE15PRO-256",
-        "attribute": "capacity",
-        "value": "256GB",
-        "stock": 20,
-        "priceDiff": 100
-      }
-    ],
-    "reviews": []
-  }
-]
+      "variants": [
+        {
+          "id": 1,
+          "sku": "IPHONE15PRO-128",
+          "attribute": "capacity",
+          "value": "128GB",
+          "stock": 20,
+          "priceDiff": 0
+        },
+        {
+          "id": 2,
+          "sku": "IPHONE15PRO-256",
+          "attribute": "capacity",
+          "value": "256GB",
+          "stock": 20,
+          "priceDiff": 100
+        }
+      ],
+      "reviews": []
+    }
+  ],
+  "message": "Products retrieved successfully"
+}
 ```
 
 #### Get Product by ID
@@ -153,28 +165,31 @@ Authorization: Bearer <token>
 
 **Response:**
 ```json
-[
-  {
-    "id": 1,
-    "userId": 1,
-    "variantId": 1,
-    "quantity": 2,
-    "variant": {
+{
+  "data": [
+    {
       "id": 1,
-      "sku": "IPHONE15PRO-128",
-      "attribute": "capacity",
-      "value": "128GB",
-      "stock": 20,
-      "priceDiff": 0,
-      "product": {
+      "userId": 1,
+      "variantId": 1,
+      "quantity": 2,
+      "variant": {
         "id": 1,
-        "title": "iPhone 15 Pro",
-        "price": 999.99,
-        "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+        "sku": "IPHONE15PRO-128",
+        "attribute": "capacity",
+        "value": "128GB",
+        "stock": 20,
+        "priceDiff": 0,
+        "product": {
+          "id": 1,
+          "title": "iPhone 15 Pro",
+          "price": 999.99,
+          "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+        }
       }
     }
-  }
-]
+  ],
+  "message": "Cart items retrieved successfully"
+}
 ```
 
 #### Add Item to Cart
@@ -211,39 +226,42 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "id": 1,
-  "userId": 1,
-  "status": "pending",
-  "total": 1999.98,
-  "createdAt": "2025-08-05T14:15:18.000Z",
-  "items": [
-    {
-      "id": 1,
-      "orderId": 1,
-      "variantId": 1,
-      "quantity": 2,
-      "price": 999.99,
-      "variant": {
+  "data": {
+    "id": 1,
+    "userId": 1,
+    "status": "pending",
+    "total": 1999.98,
+    "createdAt": "2025-08-05T14:15:18.000Z",
+    "items": [
+      {
         "id": 1,
-        "sku": "IPHONE15PRO-128",
-        "attribute": "capacity",
-        "value": "128GB",
-        "product": {
+        "orderId": 1,
+        "variantId": 1,
+        "quantity": 2,
+        "price": 999.99,
+        "variant": {
           "id": 1,
-          "title": "iPhone 15 Pro",
-          "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+          "sku": "IPHONE15PRO-128",
+          "attribute": "capacity",
+          "value": "128GB",
+          "product": {
+            "id": 1,
+            "title": "iPhone 15 Pro",
+            "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+          }
         }
       }
+    ],
+    "address": {
+      "id": 1,
+      "label": "Home",
+      "line1": "123 Main St",
+      "city": "New York",
+      "postal": "10001",
+      "country": "USA"
     }
-  ],
-  "address": {
-    "id": 1,
-    "label": "Home",
-    "line1": "123 Main St",
-    "city": "New York",
-    "postal": "10001",
-    "country": "USA"
-  }
+  },
+  "message": "Order created successfully"
 }
 ```
 
@@ -268,32 +286,35 @@ GET /api/products/{productId}/reviews
 
 **Response:**
 ```json
-[
-  {
-    "id": 1,
-    "productId": 1,
-    "userId": 1,
-    "rating": 5,
-    "comment": "Excellent product!",
-    "createdAt": "2025-08-05T14:15:18.000Z",
-    "user": {
+{
+  "data": [
+    {
       "id": 1,
-      "name": "John Doe"
-    }
-  },
-  {
-    "id": 2,
-    "productId": 1,
-    "userId": 2,
-    "rating": 4,
-    "comment": "Great quality, fast delivery",
-    "createdAt": "2025-08-05T14:20:30.000Z",
-    "user": {
+      "productId": 1,
+      "userId": 1,
+      "rating": 5,
+      "comment": "Excellent product!",
+      "createdAt": "2025-08-05T14:15:18.000Z",
+      "user": {
+        "id": 1,
+        "name": "John Doe"
+      }
+    },
+    {
       "id": 2,
-      "name": "Jane Smith"
+      "productId": 1,
+      "userId": 2,
+      "rating": 4,
+      "comment": "Great quality, fast delivery",
+      "createdAt": "2025-08-05T14:20:30.000Z",
+      "user": {
+        "id": 2,
+        "name": "Jane Smith"
+      }
     }
-  }
-]
+  ],
+  "message": "Product reviews retrieved successfully"
+}
 ```
 
 #### Add Product Review (Protected)
@@ -311,16 +332,19 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "id": 3,
-  "productId": 1,
-  "userId": 1,
-  "rating": 5,
-  "comment": "Excellent product!",
-  "createdAt": "2025-08-05T14:25:45.000Z",
-  "user": {
-    "id": 1,
-    "name": "John Doe"
-  }
+  "data": {
+    "id": 3,
+    "productId": 1,
+    "userId": 1,
+    "rating": 5,
+    "comment": "Excellent product!",
+    "createdAt": "2025-08-05T14:25:45.000Z",
+    "user": {
+      "id": 1,
+      "name": "John Doe"
+    }
+  },
+  "message": "Review added successfully"
 }
 ```
 
