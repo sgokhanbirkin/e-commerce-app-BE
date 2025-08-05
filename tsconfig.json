@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "exclude": ["jest.config.ts", "jest.setup.ts"]
+  "exclude": ["jest.config.ts", "jest.setup.ts", "prisma/seed.ts"]
 }

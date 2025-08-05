@@ -5,6 +5,9 @@ import productsRouter from "./routes/products";
 import basketRouter from "./routes/basket";
 import authRouter from "./routes/auth";
 import healthRouter from "./routes/health";
+import reviewsRouter from "./routes/reviews";
+import cartRouter from "./routes/cart";
+import ordersRouter from "./routes/orders";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -23,11 +26,16 @@ app.use(logger);
 app.use(express.json());
 app.use(apiLimiter);
 
+// API Routes
 app.use("/api/products", productsRouter);
+app.use("/api/products", reviewsRouter); // Reviews are nested under products
 app.use("/api/basket", basketRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/orders", ordersRouter);
 app.use("/health", healthRouter);
 
+// Swagger Documentation
 const specs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -38,6 +46,7 @@ const server = app.listen(PORT, () => {
 
 app.use(errorHandler);
 
+// Graceful shutdown
 process.on("SIGTERM", () => {
   logger.logger.info("SIGTERM received, shutting down");
   server.close(() => db.$disconnect());

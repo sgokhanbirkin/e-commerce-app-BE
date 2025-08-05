@@ -1,16 +1,35 @@
 import { Request, Response } from "express";
 import { ProductRepo } from "../repositories/product.repository";
+import {
+  getAllProducts,
+  getProductById,
+  getProductVariants,
+} from "../services/productsService";
 
-export const list = async (_: Request, res: Response) => {
-  const items = await ProductRepo.findAll();
+export const list = async (req: Request, res: Response) => {
+  const filters = {
+    category: req.query.category as string,
+    search: req.query.search as string,
+    isNew: req.query.isNew === "true",
+    page: parseInt(req.query.page as string) || 1,
+    limit: parseInt(req.query.limit as string) || 10,
+  };
+
+  const items = await getAllProducts(filters);
   res.json(items);
 };
 
 export const detail = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const item = await ProductRepo.findById(id);
+  const item = await getProductById(id);
   if (!item) return res.status(404).json({ error: "Not found" });
   res.json(item);
+};
+
+export const variants = async (req: Request, res: Response) => {
+  const productId = Number(req.params.id);
+  const variants = await getProductVariants(productId);
+  res.json(variants);
 };
 
 export const create = async (req: Request, res: Response) => {

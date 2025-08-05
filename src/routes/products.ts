@@ -37,8 +37,7 @@ const productSchema = z.object({
   description: z.string().optional(),
   price: z.number().positive(),
   imageUrl: z.string().url().optional(),
-  category: z.string().optional(),
-  isNew: z.boolean().optional(),
+  categoryId: z.number().int().positive(),
 });
 
 const router = Router();
@@ -50,6 +49,27 @@ const router = Router();
  *     summary: Tüm ürünleri listeler
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: isNew
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
  *         description: Ürün listesi
@@ -76,6 +96,25 @@ router.get("/", asyncHandler(productsController.list));
  *         description: Ürün bulunamadı
  */
 router.get("/:id", asyncHandler(productsController.detail));
+
+/**
+ * @swagger
+ * /api/products/{id}/variants:
+ *   get:
+ *     summary: Ürün varyantlarını getirir
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Varyant listesi
+ */
+router.get("/:id/variants", asyncHandler(productsController.variants));
 
 /**
  * @swagger

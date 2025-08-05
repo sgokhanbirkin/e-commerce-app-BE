@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
 import * as basketService from "../services/basketService";
 
-export const list = async (_: Request, res: Response) => {
-  const items = await basketService.getItems();
+export const list = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const items = await basketService.getItems(userId);
   res.json(items);
 };
 
 export const add = async (req: Request, res: Response) => {
-  const { productId, quantity } = req.body;
-  const item = await basketService.addItem(productId, quantity);
+  const userId = (req as any).userId;
+  const { variantId, quantity } = req.body;
+  const item = await basketService.addItem(userId, variantId, quantity);
   res.status(201).json(item);
 };
 
 export const remove = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
   const id = Number(req.params.id);
-  await basketService.removeItem(id);
+  await basketService.removeItem(userId, id);
   res.sendStatus(204);
 };

@@ -10,8 +10,7 @@ export const ProductRepo = {
     description?: string;
     price: number;
     imageUrl?: string;
-    category?: string;
-    isNew?: boolean;
+    categoryId: number;
   }) => prisma.product.create({ data }),
   update: (
     id: number,
@@ -20,8 +19,7 @@ export const ProductRepo = {
       description?: string;
       price: number;
       imageUrl?: string;
-      category?: string;
-      isNew?: boolean;
+      categoryId: number;
     }>
   ) => prisma.product.update({ where: { id }, data }),
   remove: (id: number) => prisma.product.delete({ where: { id } }),
