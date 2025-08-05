@@ -1,265 +1,668 @@
-# 🛍️ Kayra Export E-Commerce Backend
+# 🛒 Kayra Export E-Commerce Backend API
 
-Modern e-ticaret API'si - Node.js, TypeScript, Express.js ve Prisma ile geliştirilmiş.
+Modern e-commerce backend API'si. Node.js, TypeScript, Express.js, Prisma ve SQLite kullanılarak geliştirilmiştir.
 
-## 🚀 Özellikler
+## 🚀 Quick Start
 
-### 🔐 **Authentication & Authorization**
-- JWT tabanlı kimlik doğrulama
-- Kullanıcı kayıt ve giriş
-- Güvenli şifre hashleme (bcrypt)
-- Korumalı route'lar
-
-### 👤 **User Management**
-- Kullanıcı profili yönetimi
-- Adres yönetimi (çoklu adres desteği)
-- Kullanıcı sipariş geçmişi
-
-### 📦 **Product Management**
-- Ürün CRUD işlemleri
-- Kategori sistemi (hiyerarşik)
-- Ürün varyantları (renk, boyut, stok)
-- Arama ve filtreleme
-- Sayfalama desteği
-
-### ⭐ **Review System**
-- Ürün değerlendirme ve yorumlar
-- 1-5 arası puanlama sistemi
-- Kullanıcı bazlı yorumlar
-
-### 🛒 **Cart & Order System**
-- Sepet yönetimi
-- Sipariş oluşturma
-- Sipariş geçmişi
-- Stok kontrolü
-
-### 🛡️ **Security & Performance**
-- Rate limiting
-- CORS yapılandırması
-- Helmet güvenlik header'ları
-- Request logging (Pino)
-- Input validation (Zod)
-
-## 🏗️ **Mimari**
-
-```
-src/
-├── controllers/     # Request handlers
-├── services/        # Business logic
-├── repositories/    # Data access layer
-├── middleware/      # Express middleware
-├── routes/          # Route definitions
-├── types/           # TypeScript declarations
-└── __tests__/       # Test files
-```
-
-## 📋 **API Endpoints**
-
-### 🔐 **Auth & User**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Yeni kullanıcı kaydı |
-| POST | `/api/auth/login` | Kullanıcı girişi |
-| GET | `/api/auth/users/me` | Kullanıcı profili |
-| POST | `/api/auth/users/me/address` | Adres ekleme |
-
-### 📦 **Products**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | Ürün listesi (filtreleme, arama, sayfalama) |
-| GET | `/api/products/:id` | Tek ürün detayı |
-| GET | `/api/products/:id/variants` | Ürün varyantları |
-| POST | `/api/products` | Yeni ürün oluşturma |
-| PUT | `/api/products/:id` | Ürün güncelleme |
-| DELETE | `/api/products/:id` | Ürün silme |
-
-### ⭐ **Reviews**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/products/:id/reviews` | Yorum ekleme |
-| GET | `/api/products/:id/reviews` | Yorum listesi |
-
-### 🛒 **Cart & Orders**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/cart` | Sepete ürün ekleme |
-| GET | `/api/cart` | Sepet içeriği |
-| DELETE | `/api/cart/:itemId` | Sepetten ürün silme |
-| POST | `/api/orders` | Sipariş oluşturma |
-| GET | `/api/orders/:id` | Sipariş detayı |
-| GET | `/api/orders/users/me/orders` | Kullanıcı sipariş geçmişi |
-
-### 🛠️ **Utility**
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Sağlık kontrolü |
-| GET | `/api-docs` | Swagger dokümantasyonu |
-
-## 🛠️ **Teknolojiler**
-
-- **Runtime**: Node.js 20, TypeScript 5
-- **Framework**: Express.js
-- **Database**: SQLite (Prisma ORM)
-- **Authentication**: JWT + bcrypt
-- **Validation**: Zod
-- **Documentation**: Swagger/OpenAPI
-- **Logging**: Pino
-- **Testing**: Jest + Supertest
-- **Package Manager**: pnpm
-
-## 🚀 **Hızlı Başlangıç**
-
-### 1. **Kurulum**
 ```bash
-# Bağımlılıkları yükle
+# Install dependencies
 pnpm install
 
-# Environment variables'ları ayarla
-cp .env.example .env
-# .env dosyasını düzenle
-```
+# Setup database
+npx prisma generate
+npx prisma migrate deploy
+pnpm seed
 
-### 2. **Veritabanı Kurulumu**
-```bash
-# Migration'ları çalıştır
-npx prisma migrate dev
-
-# Seed data ekle (opsiyonel)
-npx prisma db seed
-```
-
-### 3. **Geliştirme**
-```bash
-# Development server'ı başlat
+# Start development server
 pnpm dev
 
-# API: http://localhost:8080
-# Swagger: http://localhost:8080/api-docs
+# Build for production
+pnpm build
+pnpm start
 ```
 
-### 4. **Test**
-```bash
-# Tüm testleri çalıştır
-pnpm test
+## 📋 API Endpoints
 
-# Coverage raporu
-pnpm test:coverage
+### 🔐 Authentication
 
-# E2E testleri
-pnpm test:e2e
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "John Doe",
+  "phone": "+1234567890"
+}
 ```
 
-## 📦 **Environment Variables**
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "name": "John Doe",
+  "phone": "+1234567890",
+  "createdAt": "2025-08-05T14:13:09.738Z"
+}
+```
 
+#### Login User
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+#### Get User Profile
+```http
+GET /api/auth/users/me
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "name": "John Doe",
+  "phone": "+1234567890",
+  "createdAt": "2025-08-05T14:13:09.738Z",
+  "addresses": [
+    {
+      "id": 1,
+      "label": "Home",
+      "line1": "123 Main St",
+      "line2": "Apt 4B",
+      "city": "New York",
+      "postal": "10001",
+      "country": "USA",
+      "phone": "+1234567890"
+    }
+  ]
+}
+```
+
+### 📦 Products
+
+#### Get All Products
+```http
+GET /api/products
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "title": "iPhone 15 Pro",
+    "description": "Latest iPhone with advanced camera system",
+    "price": 999.99,
+    "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
+    "categoryId": 1,
+    "category": {
+      "id": 1,
+      "name": "Electronics"
+    },
+    "variants": [
+      {
+        "id": 1,
+        "sku": "IPHONE15PRO-128",
+        "attribute": "capacity",
+        "value": "128GB",
+        "stock": 20,
+        "priceDiff": 0
+      },
+      {
+        "id": 2,
+        "sku": "IPHONE15PRO-256",
+        "attribute": "capacity",
+        "value": "256GB",
+        "stock": 20,
+        "priceDiff": 100
+      }
+    ],
+    "reviews": []
+  }
+]
+```
+
+#### Get Product by ID
+```http
+GET /api/products/{id}
+```
+
+#### Get Products by Category
+```http
+GET /api/products?categoryId={categoryId}
+```
+
+### 🛍️ Basket (Protected)
+
+#### Get User Basket
+```http
+GET /api/basket
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "variantId": 1,
+    "quantity": 2,
+    "variant": {
+      "id": 1,
+      "sku": "IPHONE15PRO-128",
+      "attribute": "capacity",
+      "value": "128GB",
+      "stock": 20,
+      "priceDiff": 0,
+      "product": {
+        "id": 1,
+        "title": "iPhone 15 Pro",
+        "price": 999.99,
+        "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+      }
+    }
+  }
+]
+```
+
+#### Add Item to Basket
+```http
+POST /api/basket
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "variantId": 1,
+  "quantity": 2
+}
+```
+
+#### Remove Item from Basket
+```http
+DELETE /api/basket/{itemId}
+Authorization: Bearer <token>
+```
+
+### 🛒 Cart (Protected)
+
+#### Get Cart Items
+```http
+GET /api/cart
+Authorization: Bearer <token>
+```
+
+#### Add Item to Cart
+```http
+POST /api/cart
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "variantId": 1,
+  "quantity": 2
+}
+```
+
+#### Remove Item from Cart
+```http
+DELETE /api/cart/{itemId}
+Authorization: Bearer <token>
+```
+
+### 📋 Orders (Protected)
+
+#### Create Order
+```http
+POST /api/orders
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "addressId": 1
+}
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "status": "pending",
+  "total": 1999.98,
+  "createdAt": "2025-08-05T14:15:18.000Z",
+  "items": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "variantId": 1,
+      "quantity": 2,
+      "price": 999.99,
+      "variant": {
+        "id": 1,
+        "sku": "IPHONE15PRO-128",
+        "attribute": "capacity",
+        "value": "128GB",
+        "product": {
+          "id": 1,
+          "title": "iPhone 15 Pro",
+          "imageUrl": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
+        }
+      }
+    }
+  ],
+  "address": {
+    "id": 1,
+    "label": "Home",
+    "line1": "123 Main St",
+    "city": "New York",
+    "postal": "10001",
+    "country": "USA"
+  }
+}
+```
+
+#### Get Order by ID
+```http
+GET /api/orders/{id}
+Authorization: Bearer <token>
+```
+
+#### Get User Order History
+```http
+GET /api/orders/users/me/orders
+Authorization: Bearer <token>
+```
+
+### ⭐ Reviews
+
+#### Get Product Reviews
+```http
+GET /api/products/{productId}/reviews
+```
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "productId": 1,
+    "userId": 1,
+    "rating": 5,
+    "comment": "Excellent product!",
+    "createdAt": "2025-08-05T14:15:18.000Z",
+    "user": {
+      "id": 1,
+      "name": "John Doe"
+    }
+  }
+]
+```
+
+#### Add Product Review (Protected)
+```http
+POST /api/products/{productId}/reviews
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Excellent product!"
+}
+```
+
+## 🔐 Authentication Flow
+
+### 1. Register User
+```javascript
+const response = await fetch('/api/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123',
+    name: 'John Doe',
+    phone: '+1234567890'
+  })
+});
+
+const user = await response.json();
+```
+
+### 2. Login User
+```javascript
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+
+const { token, user } = await response.json();
+// Store token in localStorage or secure storage
+localStorage.setItem('token', token);
+```
+
+### 3. Use Token for Protected Requests
+```javascript
+const token = localStorage.getItem('token');
+
+const response = await fetch('/api/basket', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  }
+});
+
+const basket = await response.json();
+```
+
+## 🎯 Frontend Integration Examples
+
+### React Hook Example
+```javascript
+import { useState, useEffect } from 'react';
+
+const useAuth = () => {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null);
+
+  const login = async (email, password) => {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+  };
+
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+  };
+
+  return { token, user, login, logout };
+};
+```
+
+### Product List Component
+```javascript
+const ProductList = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      setProducts(data);
+    };
+    
+    fetchProducts();
+  }, []);
+
+  return (
+    <div>
+      {products.map(product => (
+        <div key={product.id}>
+          <img src={product.imageUrl} alt={product.title} />
+          <h3>{product.title}</h3>
+          <p>${product.price}</p>
+          <select>
+            {product.variants.map(variant => (
+              <option key={variant.id} value={variant.id}>
+                {variant.value} (+${variant.priceDiff})
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+### Basket Management
+```javascript
+const BasketManager = () => {
+  const { token } = useAuth();
+  const [basket, setBasket] = useState([]);
+
+  const addToBasket = async (variantId, quantity) => {
+    const response = await fetch('/api/basket', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ variantId, quantity })
+    });
+    
+    // Refresh basket
+    fetchBasket();
+  };
+
+  const fetchBasket = async () => {
+    const response = await fetch('/api/basket', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    setBasket(data);
+  };
+
+  return (
+    <div>
+      {basket.map(item => (
+        <div key={item.id}>
+          <img src={item.variant.product.imageUrl} />
+          <h4>{item.variant.product.title}</h4>
+          <p>{item.variant.value}</p>
+          <p>Quantity: {item.quantity}</p>
+          <p>Price: ${item.variant.product.price + item.variant.priceDiff}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+## 📊 Database Schema
+
+### Users
+```sql
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  passwordHash TEXT NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Products
+```sql
+CREATE TABLE products (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  imageUrl TEXT,
+  categoryId INTEGER,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Product Variants
+```sql
+CREATE TABLE product_variants (
+  id INTEGER PRIMARY KEY,
+  productId INTEGER,
+  sku TEXT UNIQUE NOT NULL,
+  attribute TEXT NOT NULL,
+  value TEXT NOT NULL,
+  stock INTEGER DEFAULT 0,
+  priceDiff DECIMAL(10,2) DEFAULT 0
+);
+```
+
+### Basket Items
+```sql
+CREATE TABLE basket_items (
+  id INTEGER PRIMARY KEY,
+  userId INTEGER,
+  variantId INTEGER,
+  quantity INTEGER DEFAULT 1,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 🛠️ Development
+
+### Environment Variables
 ```env
-PORT=8080
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-secret-key-change-in-production"
 CORS_ORIGIN="*"
 LOG_LEVEL="info"
 NODE_ENV="development"
+PORT=8080
 ```
 
-## 🗄️ **Veritabanı Şeması**
+### Available Scripts
+```bash
+pnpm dev          # Start development server
+pnpm build         # Build for production
+pnpm start         # Start production server
+pnpm test          # Run tests
+pnpm lint          # Run ESLint
+pnpm seed          # Seed database with sample data
+```
 
-### **Ana Modeller**
-- **User**: Kullanıcı bilgileri
-- **Address**: Teslimat adresleri
-- **Category**: Ürün kategorileri
-- **Product**: Ana ürün bilgileri
-- **ProductVariant**: Ürün varyantları
-- **Order**: Sipariş bilgileri
-- **OrderItem**: Sipariş detayları
-- **Review**: Kullanıcı yorumları
-- **BasketItem**: Sepet öğeleri
+### Docker
+```bash
+# Build image
+docker build -t ecommerce-backend .
 
-## 🧪 **Test Stratejisi**
+# Run container
+docker run -p 8080:8080 ecommerce-backend
 
-### **Test Türleri**
-- **Unit Tests**: Service ve utility fonksiyonları
-- **Integration Tests**: API endpoint'leri
-- **E2E Tests**: Tam kullanıcı senaryoları
+# Using Docker Compose
+docker compose up -d
+```
 
-### **Test Coverage**
-- Hedef: %80+ coverage
-- Kritik business logic için %100 coverage
+## 🔒 Security Features
 
-## 🐳 **Docker**
+- **JWT Authentication** - Secure token-based authentication
+- **Password Hashing** - bcrypt for password security
+- **CORS Protection** - Configurable CORS settings
+- **Rate Limiting** - API rate limiting (100 requests per 15 minutes)
+- **Helmet** - Security headers
+- **Input Validation** - Zod schema validation
+- **Error Handling** - Centralized error handling
 
-### **Build**
+## 📈 API Response Format
+
+### Success Response
+```json
+{
+  "data": {...},
+  "message": "Success message"
+}
+```
+
+### Error Response
+```json
+{
+  "error": "Error message",
+  "statusCode": 400
+}
+```
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+pnpm test
+```
+
+### Test Coverage
+- Unit tests for services
+- Integration tests for API endpoints
+- Authentication tests
+- Database operations tests
+
+## 📚 API Documentation
+
+Interactive API documentation available at:
+```
+http://localhost:8080/api-docs
+```
+
+## 🚀 Deployment
+
+### Production Build
+```bash
+pnpm build
+pnpm start
+```
+
+### Docker Deployment
 ```bash
 docker build -t ecommerce-backend .
+docker run -p 8080:8080 -e NODE_ENV=production ecommerce-backend
 ```
 
-### **Run**
-```bash
-docker run -p 8080:8080 ecommerce-backend
+### Environment Variables for Production
+```env
+DATABASE_URL="file:./prod.db"
+JWT_SECRET="your-super-secure-jwt-secret"
+CORS_ORIGIN="https://yourdomain.com"
+LOG_LEVEL="error"
+NODE_ENV="production"
 ```
 
-### **Docker Compose**
-```bash
-docker-compose up -d
-```
+## 📞 Support
 
-## 🔄 **CI/CD**
-
-GitHub Actions ile otomatik:
-- ✅ Lint kontrolü
-- ✅ Test çalıştırma
-- ✅ Build işlemi
-- ✅ Docker image oluşturma
-
-## 📊 **Monitoring & Logging**
-
-- **Request Logging**: Pino ile structured logging
-- **Error Tracking**: Global error handler
-- **Health Check**: `/health` endpoint
-- **Performance**: Rate limiting ve caching
-
-## 🔒 **Güvenlik**
-
-- **Authentication**: JWT tokens
-- **Authorization**: Role-based access
-- **Input Validation**: Zod schemas
-- **Rate Limiting**: API abuse koruması
-- **Security Headers**: Helmet middleware
-- **CORS**: Cross-origin resource sharing
-
-## 📈 **Performance**
-
-- **Database**: Prisma query optimization
-- **Caching**: Response caching (gelecek)
-- **Pagination**: API response pagination
-- **Compression**: Response compression (gelecek)
-
-## 🤝 **Katkıda Bulunma**
-
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit yapın (`git commit -m 'feat: add amazing feature'`)
-4. Push yapın (`git push origin feature/amazing-feature`)
-5. Pull Request oluşturun
-
-## 📝 **Commit Convention**
-
-```
-<type>(<scope>): <description>
-
-feat: yeni özellik
-fix: hata düzeltmesi
-docs: dokümantasyon
-style: kod formatı
-refactor: kod refactoring
-test: test ekleme/düzenleme
-chore: build, config değişiklikleri
-```
-
-## 📄 **Lisans**
-
-Bu proje MIT lisansı altında lisanslanmıştır.
+For API support and questions:
+- **Email:** support@kayraexport.com
+- **Documentation:** http://localhost:8080/api-docs
+- **GitHub Issues:** [Repository Issues](https://github.com/your-repo/issues)
 
 ---
 
-**Geliştirici**: Süleyman Gökhan BİRKİN
-**Versiyon**: 1.0.0  
-**Son Güncelleme**: 2025
+**Built with ❤️ using Node.js, TypeScript, Express.js, Prisma, and SQLite**
