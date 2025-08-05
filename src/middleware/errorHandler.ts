@@ -1,11 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
-export function errorHandler(
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function errorHandler(err: any, req: Request, res: Response) {
   // Log the error (can be replaced with a logger like pino)
   console.error(err);
   const status = err.status || 500;

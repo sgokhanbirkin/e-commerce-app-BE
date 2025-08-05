@@ -1,5 +1,3 @@
-import { Options } from "swagger-jsdoc";
-
 export const swaggerOptions = {
   definition: {
     openapi: "3.0.1",

@@ -1,21 +1,13 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodObject } from "zod";
 
-export const validationHandler = (schema: any) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { error } = schema.validate(req.body);
-      if (error) {
-        return res.status(400).json({
-          status: "error",
-          message: error.details[0].message,
-        });
-      }
-      next();
-    } catch (err) {
-      return res.status(400).json({
-        status: "error",
-        message: "Validation error",
-      });
+export const validateBody =
+  (schema: ZodObject<any>) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.format() });
     }
+    req.body = result.data;
+    next();
   };
-};
