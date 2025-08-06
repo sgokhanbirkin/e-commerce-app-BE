@@ -1,9 +1,10 @@
 import { db } from "../db";
 
 export const addToCart = async (
-  userId: number,
+  userId: number | null,
   variantId: number,
-  quantity: number
+  quantity: number,
+  guestId?: string
 ) => {
   // Önce variant'ı kontrol et
   const variant = await db.productVariant.findUnique({
@@ -15,11 +16,11 @@ export const addToCart = async (
   if (variant.stock < quantity) throw new Error("Insufficient stock");
 
   // Kullanıcının sepetinde bu variant var mı kontrol et
+  const whereClause = userId
+    ? { userId, variantId }
+    : { guestId: guestId!, variantId };
   const existingItem = await db.basketItem.findFirst({
-    where: {
-      userId,
-      variantId,
-    },
+    where: whereClause,
   });
 
   if (existingItem) {
@@ -31,35 +32,66 @@ export const addToCart = async (
     });
   } else {
     // Yeni sepet öğesi oluştur
+    const createData = userId
+      ? { userId, variantId, quantity }
+      : { guestId: guestId!, variantId, quantity };
+
     return db.basketItem.create({
-      data: { userId, variantId, quantity },
+      data: createData,
       include: { variant: { include: { product: true } } },
     });
   }
 };
 
-export const getCart = async (userId: number) => {
-  return db.basketItem.findMany({
-    where: { userId },
+export const getCart = async (userId: number | null, guestId?: string) => {
+  const whereClause = userId ? { userId } : { guestId: guestId! };
+  const basketItems = await db.basketItem.findMany({
+    where: whereClause,
     include: {
       variant: {
         include: { product: true },
       },
     },
   });
+
+  // İstenen formata dönüştür
+  return basketItems.map((item) => ({
+    id: item.id,
+    variantId: item.variantId,
+    quantity: item.quantity,
+    product: {
+      id: item.variant.product.id,
+      title: item.variant.product.title,
+      description: item.variant.product.description,
+      imageUrl: item.variant.product.imageUrl,
+      price: item.variant.product.price,
+    },
+    variant: {
+      id: item.variant.id,
+      name: item.variant.attribute,
+      value: item.variant.value,
+      price: item.variant.product.price + item.variant.priceDiff,
+    },
+  }));
 };
 
-export const removeFromCart = async (userId: number, itemId: number) => {
+export const removeFromCart = async (
+  userId: number | null,
+  itemId: number,
+  guestId?: string
+) => {
+  const whereClause = userId
+    ? { id: itemId, userId }
+    : { id: itemId, guestId: guestId! };
+
   return db.basketItem.delete({
-    where: {
-      id: itemId,
-      userId, // Güvenlik için userId kontrolü
-    },
+    where: whereClause,
   });
 };
 
-export const clearCart = async (userId: number) => {
+export const clearCart = async (userId: number | null, guestId?: string) => {
+  const whereClause = userId ? { userId } : { guestId: guestId! };
   return db.basketItem.deleteMany({
-    where: { userId },
+    where: whereClause,
   });
 };

@@ -11,21 +11,8 @@ export const getAllProducts = async (filters: any = {}) => {
 
   const skip = (page - 1) * limit;
 
-  return db.product.findMany({
+  const products = await db.product.findMany({
     where,
-    include: {
-      category: true,
-      variants: true,
-      reviews: true,
-    },
-    skip,
-    take: limit,
-  });
-};
-
-export const getProductById = async (id: number) => {
-  return db.product.findUnique({
-    where: { id },
     include: {
       category: true,
       variants: true,
@@ -37,7 +24,58 @@ export const getProductById = async (id: number) => {
         },
       },
     },
+    skip,
+    take: limit,
   });
+
+  // Her ürün için averageRating ve reviewCount hesapla
+  return products.map((product) => {
+    const averageRating =
+      product.reviews.length > 0
+        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) /
+          product.reviews.length
+        : 0;
+
+    return {
+      ...product,
+      averageRating: Math.round(averageRating * 10) / 10, // 1 ondalık basamak
+      reviewCount: product.reviews.length,
+    };
+  });
+};
+
+export const getProductById = async (id: number) => {
+  const product = await db.product.findUnique({
+    where: { id },
+    include: {
+      category: true,
+      variants: true,
+      reviews: {
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!product) return null;
+
+  // averageRating ve reviewCount hesapla
+  const averageRating =
+    product.reviews.length > 0
+      ? product.reviews.reduce((sum, review) => sum + review.rating, 0) /
+        product.reviews.length
+      : 0;
+
+  return {
+    ...product,
+    averageRating: Math.round(averageRating * 10) / 10, // 1 ondalık basamak
+    reviewCount: product.reviews.length,
+    longDescription: product.description, // Şimdilik description'ı longDescription olarak kullan
+  };
 };
 
 export const getProductVariants = async (productId: number) => {

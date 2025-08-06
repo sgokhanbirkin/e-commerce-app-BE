@@ -11,6 +11,7 @@ import { swaggerOptions } from "./swagger";
 // Routes
 import healthRoutes from "./routes/health";
 import productsRoutes from "./routes/products";
+import categoriesRoutes from "./routes/categories";
 import basketRoutes from "./routes/basket";
 import cartRoutes from "./routes/cart";
 import ordersRoutes from "./routes/orders";
@@ -33,9 +34,13 @@ app.use(logger);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Static file serving
+app.use("/images", express.static("public/images"));
+
 // Routes
 app.use("/health", healthRoutes);
 app.use("/api/products", productsRoutes);
+app.use("/api/categories", categoriesRoutes);
 app.use("/api/basket", basketRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);

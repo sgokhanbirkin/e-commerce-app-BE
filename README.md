@@ -31,6 +31,22 @@ pnpm start
 
 ### 🔐 Authentication
 
+#### Create Guest Token (No Registration Required)
+```http
+POST /api/auth/guest
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "guestId": "631c-a021-fab4-4b3c-96f6-1b2bdd-fb3e7d",
+  "message": "Guest token created successfully"
+}
+```
+
+> **Note:** Guest tokens allow users to use cart functionality without registration. They expire in 7 days.
+
 #### Register User
 ```http
 POST /api/auth/register
@@ -320,13 +336,15 @@ GET /api/products/{id}/variants
 GET /api/products?categoryId={categoryId}
 ```
 
-### 🛒 Shopping Cart (Protected)
+### 🛒 Shopping Cart (Protected - User or Guest Token)
 
 #### Get Cart Items
 ```http
 GET /api/cart
 Authorization: Bearer <token>
 ```
+
+> **Note:** Works with both user tokens (from login) and guest tokens (from `/api/auth/guest`)
 
 **Response:**
 ```json
@@ -564,6 +582,29 @@ const response = await fetch('/api/cart', {
 });
 
 const basket = await response.json();
+```
+
+### 4. Guest Token Usage (No Registration Required)
+```javascript
+// Create guest token for anonymous users
+const guestResponse = await fetch('/api/auth/guest', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' }
+});
+
+const { token: guestToken, guestId } = await guestResponse.json();
+
+// Use guest token for cart operations
+const cartResponse = await fetch('/api/cart', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${guestToken}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ variantId: 1, quantity: 2 })
+});
+
+const cartItem = await cartResponse.json();
 ```
 
 ## 🎯 Frontend Integration Examples

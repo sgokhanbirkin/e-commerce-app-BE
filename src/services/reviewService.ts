@@ -15,7 +15,12 @@ export const createReview = async (
     },
     include: {
       user: {
-        select: { name: true, email: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatarUrl: true,
+        },
       },
     },
   });
@@ -26,7 +31,12 @@ export const getProductReviews = async (productId: number) => {
     where: { productId },
     include: {
       user: {
-        select: { name: true, email: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatarUrl: true,
+        },
       },
     },
     orderBy: { createdAt: "desc" },

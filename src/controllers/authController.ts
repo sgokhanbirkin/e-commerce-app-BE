@@ -4,6 +4,7 @@ import {
   loginUser,
   getUserProfile,
   addUserAddress,
+  createGuestToken,
 } from "../services/authService";
 
 export const register = async (req: Request, res: Response) => {
@@ -29,4 +30,13 @@ export const addAddress = async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const address = await addUserAddress(userId, req.body);
   res.status(201).json(address);
+};
+
+export const createGuest = async (req: Request, res: Response) => {
+  const { token, guestId } = await createGuestToken();
+  res.status(201).json({
+    token,
+    guestId,
+    message: "Guest token created successfully",
+  });
 };

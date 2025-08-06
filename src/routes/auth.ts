@@ -198,4 +198,31 @@ router.post(
   asyncHandler(authController.addAddress)
 );
 
+/**
+ * @swagger
+ * /api/auth/guest:
+ *   post:
+ *     summary: Guest token oluşturur (kayıt olmadan kullanım için)
+ *     tags:
+ *       - Auth / Guest
+ *     responses:
+ *       201:
+ *         description: Guest token başarıyla oluşturuldu
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: "Guest JWT token"
+ *                 guestId:
+ *                   type: string
+ *                   description: "Unique guest identifier"
+ *                 message:
+ *                   type: string
+ *                   description: "Success message"
+ */
+router.post("/guest", asyncHandler(authController.createGuest));
+
 export default router;

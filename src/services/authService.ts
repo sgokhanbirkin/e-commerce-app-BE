@@ -1,6 +1,7 @@
 import { db } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -66,4 +67,41 @@ export async function addUserAddress(userId: number, addressData: any) {
       userId,
     },
   });
+}
+
+export async function createGuestToken() {
+  const guestId = uuidv4();
+  const token = jwt.sign(
+    {
+      guestId,
+      type: "guest",
+    },
+    JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    token,
+    guestId,
+  };
+}
+
+export async function validateGuestToken(token: string) {
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as {
+      guestId: string;
+      type: string;
+      userId?: number;
+    };
+
+    if (payload.type === "guest") {
+      return { guestId: payload.guestId, type: "guest" };
+    } else if (payload.userId) {
+      return { userId: payload.userId, type: "user" };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
 }
