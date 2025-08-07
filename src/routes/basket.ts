@@ -48,6 +48,21 @@ router.post("/", authMiddleware, asyncHandler(basketController.add));
 
 /**
  * @swagger
+ * /api/basket:
+ *   delete:
+ *     summary: Tüm sepeti temizler
+ *     tags:
+ *       - Basket
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204:
+ *         description: Sepet temizlendi
+ */
+router.delete("/", authMiddleware, asyncHandler(basketController.clearCart));
+
+/**
+ * @swagger
  * /api/basket/{id}:
  *   delete:
  *     summary: Sepetten ürün siler

@@ -23,3 +23,9 @@ export const removeItem = async (userId: number, id: number) => {
     where: { id, userId },
   });
 };
+
+export const clearCart = async (userId: number) => {
+  return db.basketItem.deleteMany({
+    where: { userId },
+  });
+};

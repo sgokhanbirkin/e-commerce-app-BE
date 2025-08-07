@@ -23,9 +23,10 @@ export const addToCart = async (
     where: whereClause,
   });
 
+  let result;
   if (existingItem) {
     // Mevcut miktarı güncelle
-    return db.basketItem.update({
+    result = await db.basketItem.update({
       where: { id: existingItem.id },
       data: { quantity: existingItem.quantity + quantity },
       include: { variant: { include: { product: true } } },
@@ -36,11 +37,26 @@ export const addToCart = async (
       ? { userId, variantId, quantity }
       : { guestId: guestId!, variantId, quantity };
 
-    return db.basketItem.create({
+    result = await db.basketItem.create({
       data: createData,
       include: { variant: { include: { product: true } } },
     });
   }
+
+  // Return in the expected format
+  return {
+    id: result.id.toString(),
+    productId: result.variant.product.id.toString(),
+    quantity: result.quantity,
+    product: {
+      id: result.variant.product.id,
+      title: result.variant.product.title,
+      description: result.variant.product.description,
+      imageUrl: result.variant.product.imageUrl,
+      price: result.variant.product.price,
+    },
+    variantId: result.variantId.toString(),
+  };
 };
 
 export const getCart = async (userId: number | null, guestId?: string) => {
@@ -54,10 +70,10 @@ export const getCart = async (userId: number | null, guestId?: string) => {
     },
   });
 
-  // İstenen formata dönüştür
+  // Return in the expected format
   return basketItems.map((item) => ({
-    id: item.id,
-    variantId: item.variantId,
+    id: item.id.toString(),
+    productId: item.variant.product.id.toString(),
     quantity: item.quantity,
     product: {
       id: item.variant.product.id,
@@ -66,12 +82,7 @@ export const getCart = async (userId: number | null, guestId?: string) => {
       imageUrl: item.variant.product.imageUrl,
       price: item.variant.product.price,
     },
-    variant: {
-      id: item.variant.id,
-      name: item.variant.attribute,
-      value: item.variant.value,
-      price: item.variant.product.price + item.variant.priceDiff,
-    },
+    variantId: item.variantId.toString(),
   }));
 };
 
@@ -84,6 +95,15 @@ export const removeFromCart = async (
     ? { id: itemId, userId }
     : { id: itemId, guestId: guestId! };
 
+  // Check if the item exists before trying to delete it
+  const existingItem = await db.basketItem.findFirst({
+    where: whereClause,
+  });
+
+  if (!existingItem) {
+    throw new Error("Cart item not found");
+  }
+
   return db.basketItem.delete({
     where: whereClause,
   });
@@ -94,4 +114,52 @@ export const clearCart = async (userId: number | null, guestId?: string) => {
   return db.basketItem.deleteMany({
     where: whereClause,
   });
+};
+
+export const updateCartItemQuantity = async (
+  userId: number | null,
+  itemId: number,
+  quantity: number,
+  guestId?: string
+) => {
+  const whereClause = userId
+    ? { id: itemId, userId }
+    : { id: itemId, guestId: guestId! };
+
+  // Check if the item exists
+  const existingItem = await db.basketItem.findFirst({
+    where: whereClause,
+    include: { variant: { include: { product: true } } },
+  });
+
+  if (!existingItem) {
+    throw new Error("Cart item not found");
+  }
+
+  // Check stock availability
+  if (existingItem.variant.stock < quantity) {
+    throw new Error("Insufficient stock");
+  }
+
+  // Update the quantity
+  const updatedItem = await db.basketItem.update({
+    where: whereClause,
+    data: { quantity },
+    include: { variant: { include: { product: true } } },
+  });
+
+  // Return in the expected format
+  return {
+    id: updatedItem.id.toString(),
+    productId: updatedItem.variant.product.id.toString(),
+    quantity: updatedItem.quantity,
+    product: {
+      id: updatedItem.variant.product.id,
+      title: updatedItem.variant.product.title,
+      description: updatedItem.variant.product.description,
+      imageUrl: updatedItem.variant.product.imageUrl,
+      price: updatedItem.variant.product.price,
+    },
+    variantId: updatedItem.variantId.toString(),
+  };
 };

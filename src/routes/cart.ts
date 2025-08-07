@@ -10,6 +10,10 @@ const cartItemSchema = z.object({
   quantity: z.number().int().positive(),
 });
 
+const updateQuantitySchema = z.object({
+  quantity: z.number().int().positive(),
+});
+
 const router = Router();
 
 /**
@@ -35,6 +39,36 @@ const router = Router();
  *     responses:
  *       201:
  *         description: Ürün sepete eklendi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 productId:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 product:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     description:
+ *                       type: string
+ *                     imageUrl:
+ *                       type: string
+ *                     price:
+ *                       type: number
+ *                 variantId:
+ *                   type: string
+ *       400:
+ *         description: Geçersiz veri veya yetersiz stok
+ *       404:
+ *         description: Variant bulunamadı
  */
 router.post(
   "/",
@@ -55,8 +89,51 @@ router.post(
  *     responses:
  *       200:
  *         description: Sepet içeriği
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   productId:
+ *                     type: string
+ *                   quantity:
+ *                     type: integer
+ *                   product:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       title:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       price:
+ *                         type: number
+ *                   variantId:
+ *                     type: string
  */
 router.get("/", authMiddleware, asyncHandler(cartController.listItems));
+
+/**
+ * @swagger
+ * /api/cart:
+ *   delete:
+ *     summary: Sepeti tamamen temizler
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204:
+ *         description: Sepet başarıyla temizlendi
+ */
+router.delete("/", authMiddleware, asyncHandler(cartController.clearCartItems));
 
 /**
  * @swagger
@@ -81,6 +158,72 @@ router.delete(
   "/:itemId",
   authMiddleware,
   asyncHandler(cartController.removeItem)
+);
+
+/**
+ * @swagger
+ * /api/cart/{itemId}:
+ *   patch:
+ *     summary: Sepet öğesi miktarını günceller
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: integer
+ *                 minimum: 1
+ *     responses:
+ *       200:
+ *         description: Miktar başarıyla güncellendi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 productId:
+ *                   type: string
+ *                 quantity:
+ *                   type: integer
+ *                 product:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     description:
+ *                       type: string
+ *                     imageUrl:
+ *                       type: string
+ *                     price:
+ *                       type: number
+ *                 variantId:
+ *                   type: string
+ *       400:
+ *         description: Geçersiz miktar veya yetersiz stok
+ *       404:
+ *         description: Sepet öğesi bulunamadı
+ */
+router.patch(
+  "/:itemId",
+  authMiddleware,
+  validateBody(updateQuantitySchema),
+  asyncHandler(cartController.updateItemQuantity)
 );
 
 export default router;

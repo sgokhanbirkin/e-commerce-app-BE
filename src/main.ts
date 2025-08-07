@@ -17,6 +17,7 @@ import cartRoutes from "./routes/cart";
 import ordersRoutes from "./routes/orders";
 import reviewsRoutes from "./routes/reviews";
 import authRoutes from "./routes/auth";
+import usersRoutes from "./routes/users";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Static file serving
 app.use("/images", express.static("public/images"));
+app.use("/avatars", express.static("public/avatars"));
 
 // Routes
 app.use("/health", healthRoutes);
@@ -46,6 +48,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/users", usersRoutes);
 
 // Swagger documentation
 const specs = swaggerJsdoc(swaggerOptions);

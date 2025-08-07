@@ -20,3 +20,9 @@ export const remove = async (req: Request, res: Response) => {
   await basketService.removeItem(userId, id);
   res.sendStatus(204);
 };
+
+export const clearCart = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  await basketService.clearCart(userId);
+  res.sendStatus(204);
+};

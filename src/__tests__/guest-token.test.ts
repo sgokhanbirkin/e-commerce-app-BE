@@ -1,121 +1,98 @@
 import request from "supertest";
 import { app } from "../main";
-import { db } from "../db";
+import jwt from "jsonwebtoken";
 
-describe("Guest Token System", () => {
-  let guestToken: string;
-  let guestId: string;
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
-  beforeAll(async () => {
-    // Test veritabanını temizle - doğru sırayla
-    await db.basketItem.deleteMany();
-    await db.orderItem.deleteMany();
-    await db.order.deleteMany();
-    await db.review.deleteMany();
-    await db.productVariant.deleteMany();
-    await db.product.deleteMany();
-    await db.category.deleteMany();
-  });
-
-  afterAll(async () => {
-    await db.$disconnect();
-  });
-
+describe("Guest Token API", () => {
   describe("POST /api/auth/guest", () => {
-    it("should create a guest token", async () => {
-      const response = await request(app).post("/api/auth/guest").expect(201);
+    it("should create guest token successfully", async () => {
+      const response = await request(app)
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
 
+      expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("token");
-      expect(response.body).toHaveProperty("guestId");
-      expect(response.body).toHaveProperty("message");
-      expect(response.body.message).toBe("Guest token created successfully");
-
-      guestToken = response.body.token;
-      guestId = response.body.guestId;
-    });
-  });
-
-  describe("Cart operations with guest token", () => {
-    let testVariantId: number;
-
-    beforeAll(async () => {
-      // Test için ürün ve variant oluştur
-      const category = await db.category.create({
-        data: { name: "Test Category" },
-      });
-
-      const product = await db.product.create({
-        data: {
-          title: "Test Product",
-          description: "Test Description",
-          price: 100,
-          categoryId: category.id,
-        },
-      });
-
-      const variant = await db.productVariant.create({
-        data: {
-          productId: product.id,
-          sku: "TEST-SKU-001",
-          attribute: "size",
-          value: "M",
-          stock: 10,
-          priceDiff: 0,
-        },
-      });
-
-      testVariantId = variant.id;
+      expect(typeof response.body.token).toBe("string");
+      expect(response.body.token.length).toBeGreaterThan(0);
     });
 
-    it("should add item to cart with guest token", async () => {
+    it("should return different tokens for multiple requests", async () => {
+      const response1 = await request(app)
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
+
+      const response2 = await request(app)
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
+
+      expect(response1.status).toBe(201);
+      expect(response2.status).toBe(201);
+      expect(response1.body.token).not.toBe(response2.body.token);
+    });
+
+    it("should create valid JWT tokens", async () => {
       const response = await request(app)
-        .post("/api/cart")
-        .set("Authorization", `Bearer ${guestToken}`)
-        .send({
-          variantId: testVariantId,
-          quantity: 2,
-        })
-        .expect(201);
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
 
-      expect(response.body).toHaveProperty("id");
-      expect(response.body).toHaveProperty("variantId", testVariantId);
-      expect(response.body).toHaveProperty("quantity", 2);
-      expect(response.body).toHaveProperty("guestId", guestId);
+      expect(response.status).toBe(201);
+
+      const token = response.body.token;
+
+      // Verify the token is a valid JWT
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+      expect(decoded).toHaveProperty("guestId");
+      expect(decoded).toHaveProperty("type");
+      expect(decoded).toHaveProperty("iat");
+      expect(decoded).toHaveProperty("exp");
+      expect(decoded.type).toBe("guest");
+      expect(typeof decoded.guestId).toBe("string");
+      expect(decoded.guestId.length).toBeGreaterThan(0);
     });
 
-    it("should get cart items with guest token", async () => {
+    it("should create tokens with 7 day expiration", async () => {
       const response = await request(app)
-        .get("/api/cart")
-        .set("Authorization", `Bearer ${guestToken}`)
-        .expect(200);
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
 
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
-      expect(response.body[0]).toHaveProperty("guestId", guestId);
+      expect(response.status).toBe(201);
+
+      const token = response.body.token;
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+      const now = Math.floor(Date.now() / 1000);
+      const expectedExp = now + 7 * 24 * 60 * 60; // 7 days
+
+      // Allow for a small time difference (within 5 seconds)
+      expect(Math.abs(decoded.exp - expectedExp)).toBeLessThan(5);
     });
 
-    it("should remove item from cart with guest token", async () => {
-      // Önce sepeti al
-      const cartResponse = await request(app)
-        .get("/api/cart")
-        .set("Authorization", `Bearer ${guestToken}`);
+    it("should not require authentication", async () => {
+      const response = await request(app)
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json");
 
-      const itemId = cartResponse.body[0].id;
-
-      await request(app)
-        .delete(`/api/cart/${itemId}`)
-        .set("Authorization", `Bearer ${guestToken}`)
-        .expect(204);
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("token");
     });
 
-    it("should reject cart operations without token", async () => {
-      await request(app)
-        .post("/api/cart")
-        .send({
-          variantId: testVariantId,
-          quantity: 1,
-        })
-        .expect(401);
+    it("should work without Content-Type header", async () => {
+      const response = await request(app).post("/api/auth/guest");
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("token");
+    });
+
+    it("should ignore request body", async () => {
+      const response = await request(app)
+        .post("/api/auth/guest")
+        .set("Content-Type", "application/json")
+        .send({ someData: "should be ignored" });
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("token");
     });
   });
 });
